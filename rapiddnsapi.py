@@ -1,6 +1,11 @@
 from bs4 import BeautifulSoup
 import requests
+import os
 
+# todo
+
+# usar args como => { python3 <nome do script> <dominio> }.
+# perguntar ao utilizador se quer que se escreva os subdominios num ficheiro txt.
 
 def get_allsubdomains(domain):
 
@@ -17,6 +22,13 @@ def get_allsubdomains(domain):
 	for rows in website_table_items:
 		d = rows.find_all('td', limit=1)
 
-		with open('sub.txt', 'a') as file:
+		file_to_write = 'sub.txt'
+		
+		# checkar se o ficheiro existe para ser apagado e reescrito denovo.
+
+		with open(file_to_write, 'a') as file:
 			for i in d:
 				file.write(i.text+'\n')
+
+
+get_allsubdomains('google.com') 
