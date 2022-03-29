@@ -1,34 +1,48 @@
 from bs4 import BeautifulSoup
 import requests
 import os
+import sys
+import subprocess
 
-# todo
-
-# usar args como => { python3 <nome do script> <dominio> }.
-# perguntar ao utilizador se quer que se escreva os subdominios num ficheiro txt.
 
 def get_allsubdomains(domain):
 
-	url  = "https://rapiddns.io/subdomain/{}?full=1#result".format(domain)
-	
-	page = requests.get(url)
-	soup = BeautifulSoup(page.text, 'html.parser')
+    url = "https://rapiddns.io/subdomain/{}?full=1#result".format(domain)
 
-	
-	output_rows = []
-	website_table = soup.find("table",{"class":"table table-striped table-bordered"})
-	website_table_items = website_table.find_all('tr')
+    page = requests.get(url)
+    soup = BeautifulSoup(page.text, 'html.parser')
 
-	for rows in website_table_items:
-		d = rows.find_all('td', limit=1)
+    website_table = soup.find(
+        "table", {"class": "table table-striped table-bordered"})
+    website_table_items = website_table.find_all('tr')
 
-		file_to_write = 'sub.txt'
-		
-		# checkar se o ficheiro existe para ser apagado e reescrito denovo.
-
-		with open(file_to_write, 'a') as file:
-			for i in d:
-				file.write(i.text+'\n')
+    subdomains_to_file(website_table_items)
 
 
-get_allsubdomains('google.com') 
+def subdomains_to_file(data):
+
+    file_to_write = 'subdomains.txt'
+
+    if os.path.exists(file_to_write) == True:
+        subprocess.Popen(['rm {}'.format(file_to_write)],
+                         shell=True, stdin=subprocess.PIPE)
+        subprocess.Popen(['touch {}'.format(file_to_write)],
+                         shell=True, stdin=subprocess.PIPE)
+
+    else:
+        subprocess.Popen(['touch {}'.format(file_to_write)],
+                         shell=True, stdin=subprocess.PIPE)
+    for rows in data:
+        d = rows.find_all('td', limit=1)
+        with open(file_to_write, 'a') as file:
+            for i in d:
+                file.write(i.text+'\n')
+                print(i.text)
+
+if __name__ == '__main__':
+
+
+	if len(sys.argv) < 2:
+		print("way to use: python3 rapiddns.py <domain>")
+		sys.exit()
+	get_allsubdomains(sys.argv[1])
