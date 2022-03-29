@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from bs4 import BeautifulSoup
 import requests
 import os
@@ -43,6 +45,6 @@ if __name__ == '__main__':
 
 
 	if len(sys.argv) < 2:
-		print("way to use: python3 rapiddns.py <domain>")
+		print("way to use: python3 rapiddns.py <domain> OR ./rapiddns.py <domain>")	
 		sys.exit()
 	get_allsubdomains(sys.argv[1])
